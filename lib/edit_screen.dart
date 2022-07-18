@@ -5,18 +5,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const CafeAdmin());
+  runApp(const EditScreen());
 }
 
-class CafeAdmin extends StatelessWidget {
-  const CafeAdmin({Key? key}) : super(key: key);
+class EditScreen extends StatelessWidget {
+  const EditScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
       // Remove the debug banner
       debugShowCheckedModeBanner: false,
-      title: 'Edit Note',
+      title: 'My Notes',
       home: HomePage(),
     );
   }
@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descController = TextEditingController();
 
-  final CollectionReference _Notes =
+  final CollectionReference _cafe =
       FirebaseFirestore.instance.collection('Notes');
 
   Future<void> _createOrUpdate([DocumentSnapshot? documentSnapshot]) async {
@@ -51,7 +51,7 @@ class _HomePageState extends State<HomePage> {
         builder: (BuildContext ctx) {
           return Padding(
             padding: EdgeInsets.only(
-                top: 20,
+                top: 40,
                 left: 20,
                 right: 20,
                 // prevent the soft keyboard from covering text fields
@@ -71,7 +71,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 40,
                 ),
                 ElevatedButton(
                   child: Text(action == 'create' ? 'Create' : 'Update'),
@@ -82,13 +82,13 @@ class _HomePageState extends State<HomePage> {
                     if (title != null && description != null) {
                       if (action == 'create') {
                         // Persist a new cafe to Firestore
-                        await _Notes.add(
-                            {"title": title, "description": description});
+                        await _cafe
+                            .add({"title": title, "description": description});
                       }
 
                       if (action == 'update') {
                         // Update the cafe
-                        await _Notes.doc(documentSnapshot!.id).update(
+                        await _cafe.doc(documentSnapshot!.id).update(
                             {"title": title, "description": description});
                       }
 
@@ -107,25 +107,24 @@ class _HomePageState extends State<HomePage> {
         });
   }
 
-  // Deleteing a cafe by id
   Future<void> _deleteProduct(String productId) async {
-    await _Notes.doc(productId).delete();
+    await _cafe.doc(productId).delete();
 
     // Show a snackbar
     ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You have successfully deleted cafe')));
+        const SnackBar(content: Text('You have successfully deleted notes')));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.red,
-        title: const Text('Cafe Management'),
+        backgroundColor: Colors.blue,
+        title: const Text('My Notes'),
       ),
-      // Using StreamBuilder to display all cafe from Firestore in real-time
+      // Using StreamBuilder to display all notes from Firestore in real-time
       body: StreamBuilder(
-        stream: _Notes.snapshots(),
+        stream: _cafe.snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
           if (streamSnapshot.hasData) {
             return ListView.builder(

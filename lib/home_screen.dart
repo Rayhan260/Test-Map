@@ -18,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text("My Notes"),
         titleTextStyle: TextStyle(
             color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.blue,
         centerTitle: true,
       ),
       body: StreamBuilder(
